@@ -2,13 +2,13 @@ package vadim.andreich.controller;
 
 import java.util.*;
 import org.slf4j.event.Level;
-import vadim.andreich.DTO.MeasurementDTO;
-import vadim.andreich.model.Measure;
-import vadim.andreich.services.SensorService;
 import vadim.andreich.util.Parser;
+import vadim.andreich.model.Measure;
 import java.io.FileNotFoundException;
 import org.apache.logging.log4j.Logger;
+import vadim.andreich.DTO.MeasurementDTO;
 import org.apache.logging.log4j.LogManager;
+import vadim.andreich.services.SensorService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +25,7 @@ public class TestController {
 
     @PostMapping("/save")
     public ResponseEntity<Boolean> save(@RequestBody MeasurementDTO dto){
+        System.err.println(dto);
         if (dto.getValue() <= 22){
             if (logger.isDebugEnabled()) {
                 logger.info(String.format("everything is ok, current temperature is %d C°", dto.getValue()));
@@ -42,6 +43,25 @@ public class TestController {
         }
         sensorService.saveMeasurement(new Measure(dto.getValue(), dto.getSensor()));
         return ResponseEntity.of(Optional.of(true));
+    }
+    @GetMapping("/getMeasure/{id}")
+    public ResponseEntity<List<MeasurementDTO>> getAllMeasuresById(@PathVariable int id){
+        List<Measure> measures = sensorService.getAllMeasurementsByIdSensor(id);
+        List<MeasurementDTO> measurementDTOList = measures.stream()
+                .map(measure -> {
+                    MeasurementDTO m = new MeasurementDTO();
+                    m.setSensor(id);
+                    m.setValue(measure.getValue());
+                    m.setLocalDateTime(measure.getDateTime());
+                    return m;
+                })
+                .toList();
+        return ResponseEntity.of(Optional.of(measurementDTOList));
+    }
+
+    @PostMapping("/register")
+    public void saveNewSensor(){
+        sensorService.saveNew();
     }
 
     @GetMapping("/showErrors")

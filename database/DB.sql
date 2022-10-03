@@ -18,7 +18,7 @@ USE `mydb` ;
 -- Table `mydb`.`sensor`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `mydb`.`sensor` (
-                                               `sensor_id` INT NOT NULL,
+                                               `sensor_id` INT NOT NULL AUTO_INCREMENT,
                                                PRIMARY KEY (`sensor_id`))
     ENGINE = InnoDB;
 
@@ -44,3 +44,14 @@ CREATE TABLE IF NOT EXISTS `mydb`.`measure` (
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+
+START TRANSACTION;
+    USE `mydb`;
+    INSERT INTO `mydb`.`sensor` (`sensor_id`) VALUES (1);
+    INSERT INTO `mydb`.`measure` (`measure_value`) VALUES (21);
+    INSERT INTO `mydb`.`measure` (`measure_value`) VALUES (20);
+    INSERT INTO `mydb`.`measure` (`measure_value`) VALUES (19);
+    INSERT INTO `mydb`.`measure` (`measure_value`) VALUES (18);
+    INSERT INTO `mydb`.`measure` (`measure_value`) VALUES (20);
+COMMIT;

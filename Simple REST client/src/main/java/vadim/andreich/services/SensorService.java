@@ -1,9 +1,10 @@
 package vadim.andreich.services;
 
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 import vadim.andreich.model.Measure;
 import org.springframework.stereotype.Service;
 import vadim.andreich.model.Sensor;
@@ -40,5 +41,9 @@ public class SensorService {
                 measureRepository.save(measure);
             }
         });
+    }
+
+    public void saveNew() {
+        sensorRepository.save(new Sensor());
     }
 }

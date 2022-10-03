@@ -20,7 +20,7 @@ public class Sensor {
     }
     public Sensor(){}
 
-    @OneToMany(mappedBy = "sensor", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "sensor", fetch = FetchType.EAGER)
     private List<Measure> measures;
 
     @Override
