@@ -1,0 +1,23 @@
+server:
+  #address: 192.168.0.195
+  port: 8080
+
+spring:
+  datasource:
+    username: vadim
+    password: iammanjaro
+    url: jdbc:mariadb://localhost:3307/mydb
+
+  jpa:
+    properties:
+      database : mysql
+      current_session_context_class : thread
+      hibernate-dialect : org.hibernate.dialect.MySQLDialect
+      show_sql : true
+      format_sql : true
+    open-in-view: false
+
+  mvc:
+    hidden-method:
+      filter:
+        enabled: true
