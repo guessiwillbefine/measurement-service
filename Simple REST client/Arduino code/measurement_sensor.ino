@@ -45,14 +45,14 @@ void setup() {
 void loop() {
   HTTPClient http;
 
-  http.begin("http://192.168.0.195:8080/api/save");    //link to api via http
+  http.begin("http://localhost:8080/api/save");    //link to api via http
   http.addHeader("Content-Type", "application/json");  //we say that we will send json file with our request
 
   StaticJsonDocument<200> doc;  //creating json for POST method
   doc["id"] = 1;                // key and value of our json
   doc["value"] = sensor.measurements();
   String requestBody;
-  serializeJson(doc, requestBody);                // seialization of json
+  serializeJson(doc, requestBody);                // serialization of json
   int httpResponseCode = http.POST(requestBody);  //POST-method
 
   if (httpResponseCode > 0) {            //if code > 0 (any, 200, 400, 404 etc.)

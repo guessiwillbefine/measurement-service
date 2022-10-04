@@ -2,14 +2,11 @@ package vadim.andreich.services;
 
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
+import vadim.andreich.model.Sensor;
 import vadim.andreich.model.Measure;
 import org.springframework.stereotype.Service;
-import vadim.andreich.model.Sensor;
-import vadim.andreich.repositories.MeasureRepository;
 import vadim.andreich.repositories.SensorRepository;
+import vadim.andreich.repositories.MeasureRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,7 +40,9 @@ public class SensorService {
         });
     }
 
-    public void saveNew() {
-        sensorRepository.save(new Sensor());
+    @Transactional
+    public int saveNew() {
+        Sensor sensor = sensorRepository.saveAndFlush(new Sensor());
+        return sensor.getId();
     }
 }

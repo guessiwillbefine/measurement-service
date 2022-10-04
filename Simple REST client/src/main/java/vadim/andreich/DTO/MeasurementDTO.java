@@ -17,6 +17,12 @@ public class MeasurementDTO {
         //def contr
     }
 
+    public MeasurementDTO(int value, LocalDateTime localDateTime, int sensor) {
+        this.value = value;
+        this.localDateTime = localDateTime;
+        this.sensor = sensor;
+    }
+
     public int getValue() {
         return value;
     }
