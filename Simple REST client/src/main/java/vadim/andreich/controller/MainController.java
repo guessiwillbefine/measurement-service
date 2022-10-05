@@ -35,8 +35,8 @@ public class MainController {
         } else {
             logger.error(String.format("Critical temperature, pls do something %d C°", dto.getValue()));
         }
-        sensorService.saveMeasurement(new Measure(dto.getValue(), dto.getSensor()));
-        return ResponseEntity.of(Optional.of(true));
+        Measure newMeasure = new Measure(dto.getValue(), dto.getSensor());
+        return ResponseEntity.of(Optional.of(sensorService.saveMeasurement(newMeasure)));
     }
 
     @GetMapping("/getMeasure/{id}")

@@ -27,17 +27,19 @@ public class SensorService {
     }
 
     @Transactional
-    public void saveMeasurement(Measure measure) {
+    public boolean saveMeasurement(Measure measure) {
         Optional<Sensor> temporalSensor = sensorRepository.findById(measure.getSensor().getId());
-        temporalSensor.ifPresent(sens -> {
+        if (temporalSensor.isPresent()){
             List<Measure> last = measureRepository.findMeasureBySensorOrderByDateTimeDesc(new Sensor(measure.getSensor().getId()));
             if (last.isEmpty() || last.get(0).getValue() != measure.getValue()) {
-                sens.getMeasures().add(measure);
+                temporalSensor.get().getMeasures().add(measure);
                 measure.setSensor(temporalSensor.get());
                 sensorRepository.save(temporalSensor.get());
                 measureRepository.save(measure);
+                return true;
             }
-        });
+        }
+        return false;
     }
 
     @Transactional

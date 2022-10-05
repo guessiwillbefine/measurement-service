@@ -26,13 +26,9 @@ class MainControllerTest {
 
     @Autowired
     MockMvc mock;
-    @Autowired
-    SensorService sensorService;
 
     @Test
     void contextLoads() {
         assertThat(mock).isNotNull();
     }
-
-
 }
