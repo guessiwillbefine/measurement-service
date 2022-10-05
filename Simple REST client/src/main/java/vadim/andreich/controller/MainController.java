@@ -15,13 +15,13 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
-public class TestController {
+public class MainController {
     private final SensorService sensorService;
     private final Logger logger;
 
-    public TestController(SensorService sensorService) {
+    public MainController(SensorService sensorService) {
         this.sensorService = sensorService;
-        logger = LogManager.getLogger(TestController.class);
+        logger = LogManager.getLogger(MainController.class);
     }
 
     @PostMapping("/save")
@@ -48,7 +48,8 @@ public class TestController {
                 original.getSensor().getId());
 
         List<MeasurementDTO> measurementDTOList = measures.stream()
-                .map(converter::convert).toList();
+                .map(converter::convert)
+                .toList();
         return ResponseEntity.of(Optional.of(measurementDTOList));
     }
 
