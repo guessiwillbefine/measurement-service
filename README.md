@@ -14,10 +14,18 @@ to start the project with Docker you need to run this command from root director
 ### 
 return example : 
 > { <br>
+> &nbsp;&nbsp;"Sensor name": "Aragorn"<br>
 > &nbsp;&nbsp;"Sensor id": 7<br>
 > }
+### if you will register like this, API will generate name for sensor by itslef, but if request will have a param named "name", it will safe yours.
+> http://localhost:8080/api/register?name=newName will return : <br>
+> {<br>
+> &nbsp;&nbsp;"sensor name": "newName",<br>
+> &nbsp;&nbsp;"sensor id": 1<br>
+> }
 
-### (POST) Save new measure :
+
+### (POST) Save new measure. Returns a boolean value, although if the data is stored.
 > http://localhost/api/save
 #### RequestBody example
 > {<br>
