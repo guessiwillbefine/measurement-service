@@ -1,11 +1,14 @@
 package vadim.andreich.model;
 
-import lombok.Data;
+import lombok.*;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "sensor")
 public class Sensor {
@@ -15,10 +18,20 @@ public class Sensor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Column(name = "name")
+    private String name;
+
     public Sensor(int sensor) {
         this.id = sensor;
     }
     public Sensor(){}
+    public Sensor(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+    public Sensor(String name) {
+        this.name = name;
+    }
 
     @OneToMany(mappedBy = "sensor", fetch = FetchType.EAGER)
     private List<Measure> measures;
@@ -28,6 +41,19 @@ public class Sensor {
         return "Sensor{" +
                 "id=" + id +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Sensor sensor = (Sensor) o;
+        return id == sensor.id && Objects.equals(measures, sensor.measures);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, measures);
     }
 }
 

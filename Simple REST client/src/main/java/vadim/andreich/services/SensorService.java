@@ -2,6 +2,8 @@ package vadim.andreich.services;
 
 
 import java.util.*;
+
+import org.springframework.web.client.RestTemplate;
 import vadim.andreich.model.Sensor;
 import vadim.andreich.model.Measure;
 import org.springframework.stereotype.Service;
@@ -43,8 +45,17 @@ public class SensorService {
     }
 
     @Transactional
+    public int saveNew(String name) {
+        Sensor sensor = sensorRepository.saveAndFlush(new Sensor(name));
+        return sensor.getId();
+    }
+
+    @Transactional
     public int saveNew() {
-        Sensor sensor = sensorRepository.saveAndFlush(new Sensor());
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "https://names.drycodes.com/1";
+        String name = restTemplate.getForObject(url, String.class);
+        Sensor sensor = sensorRepository.saveAndFlush(new Sensor(name));
         return sensor.getId();
     }
 }

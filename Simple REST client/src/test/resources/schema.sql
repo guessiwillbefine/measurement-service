@@ -1,8 +1,9 @@
 CREATE TABLE sensor
 (
     sensor_id INT AUTO_INCREMENT NOT NULL,
-    CONSTRAINT pk_sensor PRIMARY KEY (sensor_id)
-);
+    CONSTRAINT pk_sensor PRIMARY KEY (sensor_id),
+    sensor_name VARCHAR NULL);
+
 CREATE TABLE measure
 (
     measure_id    INT AUTO_INCREMENT NOT NULL,
