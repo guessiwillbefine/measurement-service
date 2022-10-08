@@ -47,17 +47,19 @@ public class SensorService {
     @Transactional
     public Map<String, Object> saveNew(String name) {
         Sensor sensor = sensorRepository.saveAndFlush(new Sensor(name));
-        return Map.of("sensor id", sensor.getId(), "sensor name", sensor.getName());
+        return Map.of("sensor_id", sensor.getId(), "sensor name", sensor.getName());
     }
 
     @Transactional
-    public int saveNew() {
+    public Map<String, Object> saveNew() {
         RestTemplate restTemplate = new RestTemplate();
         String url = "https://names.drycodes.com/1";
         String response = restTemplate.getForObject(url, String.class);
-        if (response == null) return -1;
+        if (response == null) {
+            throw new NullPointerException();
+        }
         String name = Arrays.stream(response.split("")).filter(letter -> !letter.matches("[\\[\\]\"]")).collect(Collectors.joining());
         Sensor sensor = sensorRepository.saveAndFlush(new Sensor(name));
-        return sensor.getId();
+        return Map.of("sensor_id", sensor.getId(), "sensor name", sensor.getName());
     }
 }

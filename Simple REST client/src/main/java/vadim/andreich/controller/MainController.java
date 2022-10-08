@@ -49,12 +49,13 @@ public class MainController {
         List<MeasurementDTO> measurementDTOList = measures.stream()
                 .map(converter::convert)
                 .toList();
+
         return ResponseEntity.of(Optional.of(measurementDTOList));
     }
 
     @PostMapping("/register")
     public Map<String, Object> saveNewSensor(@RequestParam(value = "name", required = false)String name) {
-        if (name == null){
+        if (name == null) {
             return Map.of("Sensor id",  sensorService.saveNew());
         }
         return sensorService.saveNew(name);
@@ -62,7 +63,7 @@ public class MainController {
 
     @GetMapping("/showErrors")
     public String showLogs(@RequestBody(required = false) Map<String, List<String>> values) throws FileNotFoundException {
-        if (values == null){
+        if (values == null) {
             return Parser.createParser("/home/vadim/docs/Diploma/test/logs/logfile.log").getParsedLogs(Level.ERROR, Parser.Logs.FULL);
         }
         return Parser.createParser("/home/vadim/docs/Diploma/test/logs/logfile.log").getParsedLogs(Level.ERROR, values.get("keys"));
