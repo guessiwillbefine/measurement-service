@@ -1,4 +1,4 @@
-package vadim.andreich.DTO;
+package vadim.andreich.dto;
 
 
 import java.time.LocalDateTime;
@@ -17,10 +17,9 @@ public class MeasurementDTO {
         //def contr
     }
 
-    public MeasurementDTO(int value, LocalDateTime localDateTime, int sensor) {
+    public MeasurementDTO(int value, LocalDateTime localDateTime) {
         this.value = value;
         this.localDateTime = localDateTime;
-        this.sensor = sensor;
     }
 
     public int getValue() {

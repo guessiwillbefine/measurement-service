@@ -19,7 +19,8 @@ USE `mydb` ;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `mydb`.`sensor` (
                                                `sensor_id` INT NOT NULL AUTO_INCREMENT,
-                                               PRIMARY KEY (`sensor_id`))
+                                               PRIMARY KEY (`sensor_id`),
+                                               sensor_name VARCHAR(25) NULL)
     ENGINE = InnoDB;
 
 
@@ -48,10 +49,10 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
 START TRANSACTION;
     USE `mydb`;
-    INSERT INTO `mydb`.`sensor` (`sensor_id`) VALUES (1);
-    INSERT INTO `mydb`.`measure` (`measure_value`) VALUES (21);
-    INSERT INTO `mydb`.`measure` (`measure_value`) VALUES (20);
-    INSERT INTO `mydb`.`measure` (`measure_value`) VALUES (19);
-    INSERT INTO `mydb`.`measure` (`measure_value`) VALUES (18);
-    INSERT INTO `mydb`.`measure` (`measure_value`) VALUES (20);
+        INSERT INTO `mydb`.`sensor` (`sensor_id`, 'name') VALUES (1, 'sensor');
+        INSERT INTO `mydb`.`measure` (`measure_value`, time, sensor_id) VALUES (21, NOW(), 1);
+        INSERT INTO `mydb`.`measure` (`measure_value`, time, sensor_id) VALUES (20, NOW(), 1);
+        INSERT INTO `mydb`.`measure` (`measure_value`, time, sensor_id) VALUES (19, NOW(), 1);
+        INSERT INTO `mydb`.`measure` (`measure_value`, time, sensor_id) VALUES (18, NOW(), 1);
+        INSERT INTO `mydb`.`measure` (`measure_value`, time, sensor_id) VALUES (17, NOW(), 1);
 COMMIT;

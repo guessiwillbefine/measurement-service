@@ -2,7 +2,7 @@ package vadim.andreich.services;
 
 
 import java.util.*;
-
+import java.util.stream.Collectors;
 import org.springframework.web.client.RestTemplate;
 import vadim.andreich.model.Sensor;
 import vadim.andreich.model.Measure;
@@ -45,16 +45,18 @@ public class SensorService {
     }
 
     @Transactional
-    public int saveNew(String name) {
+    public Map<String, Object> saveNew(String name) {
         Sensor sensor = sensorRepository.saveAndFlush(new Sensor(name));
-        return sensor.getId();
+        return Map.of("sensor id", sensor.getId(), "sensor name", sensor.getName());
     }
 
     @Transactional
     public int saveNew() {
         RestTemplate restTemplate = new RestTemplate();
         String url = "https://names.drycodes.com/1";
-        String name = restTemplate.getForObject(url, String.class);
+        String response = restTemplate.getForObject(url, String.class);
+        if (response == null) return -1;
+        String name = Arrays.stream(response.split("")).filter(letter -> !letter.matches("[\\[\\]\"]")).collect(Collectors.joining());
         Sensor sensor = sensorRepository.saveAndFlush(new Sensor(name));
         return sensor.getId();
     }
