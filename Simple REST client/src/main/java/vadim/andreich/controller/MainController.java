@@ -2,7 +2,6 @@ package vadim.andreich.controller;
 
 import java.util.*;
 import org.slf4j.event.Level;
-import org.springframework.http.MediaType;
 import vadim.andreich.util.Parser;
 import vadim.andreich.model.Measure;
 import java.io.FileNotFoundException;
@@ -60,7 +59,7 @@ public class MainController {
         return Parser.createParser("/home/vadim/docs/Diploma/test/logs/logfile.log").getParsedLogs(Level.ERROR, values.get("keys"));
     }
 
-    @GetMapping(value = "/getMeasure/{id}", produces = {MediaType.TEXT_PLAIN_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "/getMeasure/{id}")
     public ResponseEntity<List<MeasurementDTO>> getAllMeasuresById(@PathVariable int id) {
         List<Measure> measures = sensorService.getAllMeasurementsByIdSensor(id);
         Converter<MeasurementDTO, Measure> converter = original -> new MeasurementDTO(

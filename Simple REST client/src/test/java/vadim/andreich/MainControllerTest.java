@@ -3,6 +3,9 @@ package vadim.andreich;
 import java.util.Arrays;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import vadim.andreich.dto.MeasurementDTO;
 import vadim.andreich.model.Measure;
 import vadim.andreich.services.SensorService;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -13,10 +16,10 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -61,5 +64,19 @@ class MainControllerTest {
                 Arguments.of(1, new int[]{}),
                 Arguments.of(2, new int[]{20, 21, 22, 23, 24, 25})
         );
+    }
+    @Test
+    void TestExceptionHandlerWhileGettingMeasure() throws Exception {
+        mock.perform(get("/api/getMeasure/-2"))
+                .andExpect(status().is(HttpStatus.NOT_FOUND.value()))
+                .andExpect(content().string("{\"response\":\"Sensor with id[-2] was not found\"}"));
+    }
+    @Test
+    void TestExceptionHandlerWhileSavingMeasure() throws Exception {
+        mock.perform(post("/api/save").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
+
+        mock.perform(post("/api/save").contentType(MediaType.APPLICATION_JSON).content("{\"sensor\": -1,\"value\": 20}"))
+                .andExpect(status().is(HttpStatus.NOT_FOUND.value()));
     }
 }

@@ -28,6 +28,11 @@ public class Measure {
         this.dateTime = LocalDateTime.now();
         this.sensor = new Sensor(id);
     }
+    public Measure(int value, Sensor sensor) {
+        this.value = value;
+        this.dateTime = LocalDateTime.now();
+        this.sensor = sensor;
+    }
 
     public Measure() {}
 

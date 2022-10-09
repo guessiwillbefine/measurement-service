@@ -46,8 +46,9 @@ public class SensorService {
                 measureRepository.save(measure);
                 return true;
             }
+            return false;
         }
-        return false;
+       throw new SensorNotFoundException(String.format("Sensor with id[%d] does not exist", measure.getSensor().getId()));
     }
 
     @Transactional

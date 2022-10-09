@@ -14,6 +14,7 @@ import vadim.andreich.services.SensorService;
 import vadim.andreich.util.exceptions.SensorNotFoundException;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.time.LocalDateTime;
+import java.util.Random;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,10 +42,15 @@ class SensorServiceTest {
     }
 
     @Test
-    void sensorNotFoundTestCase(){
+    void sensorNotFoundTestCaseWhileGettingMeasures(){
         assertThrows(SensorNotFoundException.class, () -> sensorService.getAllMeasurementsByIdSensor(-1));
-        assertThrows(SensorNotFoundException.class, () -> sensorService.getAllMeasurementsByIdSensor(5));
+        assertThrows(SensorNotFoundException.class, () -> sensorService.getAllMeasurementsByIdSensor(0));
         assertThrows(SensorNotFoundException.class, () -> sensorService.getAllMeasurementsByIdSensor(123));
+    }
+    @Test
+    void sensorNotFoundTestCaseWhileSavingMeasures(){
+        Measure measure = new Measure(21, new Sensor(new Random().nextInt(-100, 0)));
+        assertThrows(SensorNotFoundException.class, () -> sensorService.saveMeasurement(measure));
     }
 
     public static Stream<Arguments> testCases() { //первым идёт аргумент для тестируемого метода, вторым ожидаемый результат
