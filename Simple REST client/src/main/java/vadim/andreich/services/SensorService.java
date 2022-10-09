@@ -3,6 +3,7 @@ package vadim.andreich.services;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
 import org.springframework.web.client.RestTemplate;
 import vadim.andreich.model.Sensor;
 import vadim.andreich.model.Measure;
@@ -11,6 +12,7 @@ import vadim.andreich.repositories.SensorRepository;
 import vadim.andreich.repositories.MeasureRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import vadim.andreich.util.exceptions.SensorNotFoundException;
 
 @Service
 public class SensorService {
@@ -25,13 +27,17 @@ public class SensorService {
 
     @Transactional(readOnly = true)
     public List<Measure> getAllMeasurementsByIdSensor(int id) {
-        return Objects.requireNonNull(sensorRepository.findById(id).orElse(null)).getMeasures();
+        Optional<Sensor> sensor = sensorRepository.findById(id);
+        if (sensor.isPresent()) {
+            return sensor.get().getMeasures();
+        }
+        throw new SensorNotFoundException(String.format("Sensor with id[%d] was not found", id));
     }
 
     @Transactional
     public boolean saveMeasurement(Measure measure) {
         Optional<Sensor> temporalSensor = sensorRepository.findById(measure.getSensor().getId());
-        if (temporalSensor.isPresent()){
+        if (temporalSensor.isPresent()) {
             List<Measure> last = measureRepository.findMeasureBySensorOrderByDateTimeDesc(new Sensor(measure.getSensor().getId()));
             if (last.isEmpty() || last.get(0).getValue() != measure.getValue()) {
                 temporalSensor.get().getMeasures().add(measure);

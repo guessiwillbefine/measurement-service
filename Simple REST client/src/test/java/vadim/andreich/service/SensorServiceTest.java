@@ -1,5 +1,6 @@
 package vadim.andreich.service;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -10,7 +11,8 @@ import org.springframework.test.context.TestPropertySource;
 import vadim.andreich.model.Measure;
 import vadim.andreich.model.Sensor;
 import vadim.andreich.services.SensorService;
-
+import vadim.andreich.util.exceptions.SensorNotFoundException;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
@@ -36,6 +38,13 @@ class SensorServiceTest {
         measure.setValue(measureValue);
         measure.setDateTime(LocalDateTime.now());
         assertThat(sensorService.saveMeasurement(measure)).isEqualTo(needToBeSaved);
+    }
+
+    @Test
+    void sensorNotFoundTestCase(){
+        assertThrows(SensorNotFoundException.class, () -> sensorService.getAllMeasurementsByIdSensor(-1));
+        assertThrows(SensorNotFoundException.class, () -> sensorService.getAllMeasurementsByIdSensor(5));
+        assertThrows(SensorNotFoundException.class, () -> sensorService.getAllMeasurementsByIdSensor(123));
     }
 
     public static Stream<Arguments> testCases() { //первым идёт аргумент для тестируемого метода, вторым ожидаемый результат
