@@ -1,22 +1,17 @@
 package vadim.andreich.util.exceptions;
 
-import java.time.LocalDateTime;
+import lombok.Getter;
 
+@Getter
 public class SensorNotFoundResponse {
-    private String msg;
-    private LocalDateTime dateTime;
+    private final String response;
 
-    public static SensorNotFoundResponse makeResponse() {
-        return new SensorNotFoundResponse();
-    }
-
-    public SensorNotFoundResponse withMessage(String msg) {
-        this.msg = msg;
-        return this;
+    public SensorNotFoundResponse (String msg) {
+        this.response = msg;
     }
 
     @Override
     public String toString() {
-        return "SensorNotFoundResponse [" + dateTime + "]: " + msg;
+        return "SensorNotFoundResponse [" + response + "] ";
     }
 }

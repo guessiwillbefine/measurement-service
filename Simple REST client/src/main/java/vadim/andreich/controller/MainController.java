@@ -52,7 +52,7 @@ public class MainController {
         return sensorService.saveNew(name);
     }
 
-    @GetMapping(value = "/showErrors", produces = {MediaType.TEXT_PLAIN_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "/showErrors")
     public String showLogs(@RequestBody(required = false) Map<String, List<String>> values) throws FileNotFoundException {
         if (values == null) {
             return Parser.createParser("/home/vadim/docs/Diploma/test/logs/logfile.log").getParsedLogs(Level.ERROR, Parser.Logs.FULL);
@@ -60,7 +60,7 @@ public class MainController {
         return Parser.createParser("/home/vadim/docs/Diploma/test/logs/logfile.log").getParsedLogs(Level.ERROR, values.get("keys"));
     }
 
-    @GetMapping("/getMeasure/{id}")
+    @GetMapping(value = "/getMeasure/{id}", produces = {MediaType.TEXT_PLAIN_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<MeasurementDTO>> getAllMeasuresById(@PathVariable int id) {
         List<Measure> measures = sensorService.getAllMeasurementsByIdSensor(id);
         Converter<MeasurementDTO, Measure> converter = original -> new MeasurementDTO(
@@ -76,9 +76,7 @@ public class MainController {
 
     @ExceptionHandler
     private ResponseEntity<SensorNotFoundResponse> handle(SensorNotFoundException exception){
-        SensorNotFoundResponse response = SensorNotFoundResponse
-                .makeResponse()
-                .withMessage(exception.getMessage());
+        SensorNotFoundResponse response = new SensorNotFoundResponse(exception.getMessage());
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 }
