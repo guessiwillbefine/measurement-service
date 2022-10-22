@@ -1,11 +1,18 @@
 package vadim.andreich.model;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.Hibernate;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 
-@Data
+@Getter
+@Setter
+@ToString
 @Entity
 @Table(name = "measure")
 public class Measure {
@@ -41,5 +48,18 @@ public class Measure {
         this.value = value;
         this.dateTime = dateTime;
         this.sensor = sensor;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Measure measure = (Measure) o;
+        return Objects.equals(id, measure.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

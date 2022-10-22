@@ -26,8 +26,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource("/application.yaml")
 @AutoConfigureMockMvc
 class MainControllerTest {
-//JUnit5 is more tolerant regarding the visibilities of Test classes than JUnit4, which required everything to be public.
-//In this context, JUnit5 test classes can have any visibility but private, however,
+// JUnit5 is more tolerant regarding the visibilities of Test classes than JUnit4, which required everything to be public.
+// In this context, JUnit5 test classes can have any visibility but private, however,
 // it is recommended to use the default package visibility, which improves readability of code.
     private final MockMvc mock;
     private final SensorService sensorService;
@@ -59,12 +59,6 @@ class MainControllerTest {
         mock.perform(get("/api/getMeasure/" + id)).andExpect(status().is(200));
     }
 
-    static Stream<Arguments> testCases(){
-        return Stream.of(
-                Arguments.of(1, new int[]{}),
-                Arguments.of(2, new int[]{20, 21, 22, 23, 24, 25})
-        );
-    }
     @Test
     void TestExceptionHandlerWhileGettingMeasure() throws Exception {
         mock.perform(get("/api/getMeasure/-2"))
@@ -78,5 +72,11 @@ class MainControllerTest {
 
         mock.perform(post("/api/save").contentType(MediaType.APPLICATION_JSON).content("{\"sensor\": -1,\"value\": 20}"))
                 .andExpect(status().is(HttpStatus.NOT_FOUND.value()));
+    }
+    static Stream<Arguments> testCases(){
+        return Stream.of(
+                Arguments.of(1, new int[]{}),
+                Arguments.of(2, new int[]{20, 21, 22, 23, 24, 25})
+        );
     }
 }

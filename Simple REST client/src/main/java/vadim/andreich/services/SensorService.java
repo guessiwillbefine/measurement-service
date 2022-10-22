@@ -26,7 +26,7 @@ public class SensorService {
     }
 
     @Transactional(readOnly = true)
-    public List<Measure> getAllMeasurementsByIdSensor(int id) {
+    public List<Measure> getAllMeasurementsBySensorId(int id) {
         Optional<Sensor> sensor = sensorRepository.findById(id);
         if (sensor.isPresent()) {
             return sensor.get().getMeasures();
@@ -48,17 +48,16 @@ public class SensorService {
             }
             return false;
         }
-       throw new SensorNotFoundException(String.format("Sensor with id[%d] does not exist", measure.getSensor().getId()));
+        throw new SensorNotFoundException(String.format("Sensor with id[%d] does not exist", measure.getSensor().getId()));
     }
 
     @Transactional
-    public Map<String, Object> saveNew(String name) {
-        Sensor sensor = sensorRepository.saveAndFlush(new Sensor(name));
-        return Map.of("sensor_id", sensor.getId(), "sensor name", sensor.getName());
+    public Sensor saveNew(String name) {
+        return sensorRepository.saveAndFlush(new Sensor(name));
     }
 
     @Transactional
-    public Map<String, Object> saveNew() {
+    public Sensor saveNew() {
         RestTemplate restTemplate = new RestTemplate();
         String url = "https://names.drycodes.com/1";
         String response = restTemplate.getForObject(url, String.class);
@@ -66,7 +65,10 @@ public class SensorService {
             throw new NullPointerException();
         }
         String name = Arrays.stream(response.split("")).filter(letter -> !letter.matches("[\\[\\]\"]")).collect(Collectors.joining());
-        Sensor sensor = sensorRepository.saveAndFlush(new Sensor(name));
-        return Map.of("sensor_id", sensor.getId(), "sensor name", sensor.getName());
+        return sensorRepository.saveAndFlush(new Sensor(name));
+    }
+    @Transactional(readOnly = true)
+    public Optional<Sensor> findSensorByName(String sensorName) {
+       return sensorRepository.findDistinctByName(sensorName);
     }
 }

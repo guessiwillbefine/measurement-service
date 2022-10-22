@@ -43,9 +43,9 @@ class SensorServiceTest {
 
     @Test
     void sensorNotFoundTestCaseWhileGettingMeasures(){
-        assertThrows(SensorNotFoundException.class, () -> sensorService.getAllMeasurementsByIdSensor(-1));
-        assertThrows(SensorNotFoundException.class, () -> sensorService.getAllMeasurementsByIdSensor(0));
-        assertThrows(SensorNotFoundException.class, () -> sensorService.getAllMeasurementsByIdSensor(123));
+        assertThrows(SensorNotFoundException.class, () -> sensorService.getAllMeasurementsBySensorId(-1));
+        assertThrows(SensorNotFoundException.class, () -> sensorService.getAllMeasurementsBySensorId(0));
+        assertThrows(SensorNotFoundException.class, () -> sensorService.getAllMeasurementsBySensorId(123));
     }
     @Test
     void sensorNotFoundTestCaseWhileSavingMeasures(){
