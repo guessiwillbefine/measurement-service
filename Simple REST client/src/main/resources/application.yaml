@@ -3,18 +3,25 @@ server:
   error:
     include-message: always
 
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 256KB
+      max-request-size: 256KB
+
   datasource:
     username: root
-    password: iammanjaro
-    url: jdbc:mysql://localhost:3307/mydb
+    password: test
+    url: jdbc:mysql://localhost:3306/mydb
 
   jpa:
     properties:
-      database : mysql
-      current_session_context_class : thread
-      hibernate-dialect : org.hibernate.dialect.MySQLDialect
-      show_sql : true
-      format_sql : true
+      database: mysql
+      current_session_context_class: thread
+      hibernate-dialect: org.hibernate.dialect.MySQLDialect
+      show_sql: true
+      format_sql: true
     open-in-view: false
 
   mvc:
@@ -22,8 +29,3 @@ server:
       filter:
         enabled: true
 
-spring:
-  servlet:
-    multipart:
-      max-file-size: 256KB
-      max-request-size: 256KB

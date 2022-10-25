@@ -5,7 +5,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.PropertySource;
 
 @SpringBootApplication
-@PropertySource("/application.yaml")
 public class SimpleRestClientApplication {
     public static void main(String[] args) {
         SpringApplication.run(SimpleRestClientApplication.class, args);
