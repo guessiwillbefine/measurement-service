@@ -1,16 +1,14 @@
 package vadim.andreich;
 
-import java.sql.Connection;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.Arrays;
 import java.util.stream.Stream;
-
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import vadim.andreich.model.Measure;
+import org.springframework.http.HttpStatus;
 import vadim.andreich.model.Sensor;
+import vadim.andreich.model.Measure;
 import vadim.andreich.services.MeasureService;
 import vadim.andreich.services.SensorService;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -21,6 +19,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -31,9 +30,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @TestPropertySource("/application.yaml")
 class MainControllerTest {
-// JUnit5 is more tolerant regarding the visibilities of Test classes than JUnit4, which required everything to be public.
-// In this context, JUnit5 test classes can have any visibility but private, however,
-// it is recommended to use the default package visibility, which improves readability of code.
     private final MockMvc mock;
     private final SensorService sensorService;
     private final MeasureService measureService;
@@ -83,7 +79,20 @@ class MainControllerTest {
     }
 
     @Test
-    void TestExceptionHandlerWhileGetStats() throws Exception {
+    void pictureShouldBeReturnedWithCorrectData() throws Exception {
+        Sensor sensor = sensorService.saveNew();
+        sensorService.saveMeasurement(new Measure(21, sensor));
+        sensorService.saveMeasurement(new Measure(18, sensor));
+        sensorService.saveMeasurement(new Measure(21, sensor));
+
+        mock.perform(get(String.format("/api/stats/%s/3", sensor.getName())))
+                .andExpect(status().isOk())
+                .andExpect(content()
+                        .contentType(MediaType.IMAGE_JPEG_VALUE));
+    }
+
+    @Test
+    void testExceptionHandlerWhileGetStats() throws Exception {
         Random random = new Random();
         mock.perform(get("/api/stats/illegal_argument1/13254213")).andExpect(status().isNotFound());
         Sensor sensor = sensorService.saveNew();

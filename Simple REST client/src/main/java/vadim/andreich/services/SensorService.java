@@ -17,12 +17,12 @@ import vadim.andreich.util.exceptions.SensorNotFoundException;
 @Service
 public class SensorService {
     private final SensorRepository sensorRepository;
-    private final MeasureRepository measureRepository;
+    private final MeasureRepository measureSensor;
 
     @Autowired
     public SensorService(SensorRepository sensorRepository, MeasureRepository measureRepository) {
         this.sensorRepository = sensorRepository;
-        this.measureRepository = measureRepository;
+        this.measureSensor = measureRepository;
     }
 
     @Transactional(readOnly = true)
@@ -38,12 +38,12 @@ public class SensorService {
     public boolean saveMeasurement(Measure measure) {
         Optional<Sensor> temporalSensor = sensorRepository.findById(measure.getSensor().getId());
         if (temporalSensor.isPresent()) {
-            List<Measure> last = measureRepository.findMeasureBySensorOrderByDateTimeDesc(new Sensor(measure.getSensor().getId()));
+            List<Measure> last = measureSensor.findMeasureBySensorOrderByDateTimeDesc(new Sensor(measure.getSensor().getId()));
             if (last.isEmpty() || last.get(0).getValue() != measure.getValue()) {
                 temporalSensor.get().getMeasures().add(measure);
                 measure.setSensor(temporalSensor.get());
                 sensorRepository.save(temporalSensor.get());
-                measureRepository.save(measure);
+                measureSensor.save(measure);
                 return true;
             }
             return false;
