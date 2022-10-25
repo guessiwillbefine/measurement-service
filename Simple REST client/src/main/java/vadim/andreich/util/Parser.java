@@ -24,11 +24,7 @@ public class Parser {
         public static List<Logs> parse(List<String> values) {
             List<Logs> logs = new ArrayList<>();
             for (String s : values) {
-                try {
-                    logs.add(Logs.valueOf(s));
-                } catch (IllegalArgumentException exception) {
-                    throw exception;
-                }
+                logs.add(Logs.valueOf(s));
             }
             return logs;
         }

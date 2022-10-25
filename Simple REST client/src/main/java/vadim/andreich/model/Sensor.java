@@ -16,7 +16,7 @@ public class Sensor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "name")
+    @Column(name = "sensor_name")
     private String name;
 
     public Sensor(int sensor) {

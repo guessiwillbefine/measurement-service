@@ -1,52 +1,44 @@
 package vadim.andreich.controller;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.util.*;
-
-import org.knowm.xchart.BitmapEncoder;
-import org.knowm.xchart.QuickChart;
-import org.knowm.xchart.XYChart;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.slf4j.event.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.data.relational.core.sql.In;
-import org.springframework.http.MediaType;
-import vadim.andreich.model.Sensor;
-import vadim.andreich.services.MeasureService;
-import vadim.andreich.util.Parser;
-import vadim.andreich.model.Measure;
-
-import java.io.FileNotFoundException;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import org.apache.logging.log4j.Logger;
-import vadim.andreich.dto.MeasurementDTO;
 import org.springframework.http.HttpStatus;
-import org.apache.logging.log4j.LogManager;
-import vadim.andreich.services.SensorService;
-import vadim.andreich.util.convert.Converter;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import vadim.andreich.util.exceptions.SensorNotFoundResponse;
+import vadim.andreich.dto.MeasurementDTO;
+import vadim.andreich.model.Measure;
+import vadim.andreich.model.Sensor;
+import vadim.andreich.services.ChartService;
+import vadim.andreich.services.SensorService;
+import vadim.andreich.util.Parser;
+import vadim.andreich.util.convert.Converter;
+import vadim.andreich.util.exceptions.MeasuresException;
 import vadim.andreich.util.exceptions.SensorNotFoundException;
+import vadim.andreich.util.response.NullMeasuresResponse;
+import vadim.andreich.util.response.SensorNotFoundResponse;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 
 @RestController
 @RequestMapping("/api")
 public class MainController {
     private final SensorService sensorService;
-    private final MeasureService measureService;
+    private final ChartService chartService;
     private final Logger logger;
 
     @Autowired
-    public MainController(SensorService sensorService, MeasureService measureService) {
+    public MainController(SensorService sensorService, ChartService chartService) {
         this.sensorService = sensorService;
-        this.measureService = measureService;
+        this.chartService = chartService;
         logger = LogManager.getLogger(MainController.class);
     }
 
@@ -98,30 +90,25 @@ public class MainController {
     @GetMapping(value = "stats/{sensor}/{length}",
             produces = MediaType.IMAGE_JPEG_VALUE)
     public @ResponseBody ResponseEntity<Resource> getStatsOfLastMeasurements(@PathVariable("length") int length,
-                                                                             @PathVariable("sensor") String sensorName) throws IOException {
-        Optional<Sensor> optionalSensor = sensorService.findSensorByName(sensorName);
-        if (optionalSensor.isEmpty()) throw new SensorNotFoundException(String.format("Sensor with name[%s] was not found", sensorName));
+                                                                             @PathVariable("sensor") String sensorName) throws IOException, MeasuresException {
 
-        Converter<Map<LocalDateTime, Double>,List<Measure>> converter = obj -> obj.stream()
-                .collect(Collectors.toMap(Measure::getDateTime, value -> Double.valueOf(value.getValue())));
-
-        List<Measure> measuresOnlyNeeded = sensorService.getAllMeasurementsBySensorId(optionalSensor.get().getId()).subList(0, length);
-        Map<LocalDateTime, Double> mapOfMeasures = converter.convert(measuresOnlyNeeded);
-
-        List<Double> measures = mapOfMeasures.values().stream().toList();
-        List<Double> time = Stream.iterate(0.0,  x -> x + 1).limit(measures.size()).toList();
-        XYChart chart = QuickChart.getChart("weather", "day", "temperature", "Y(X)", time, measures);
-        BitmapEncoder.saveBitmap(chart, "img", BitmapEncoder.BitmapFormat.JPG);
-        final ByteArrayResource inputStream = new ByteArrayResource(Files.readAllBytes(Paths.get("img.jpg")));
+        ByteArrayResource inputStream = chartService.getChartBySensor(sensorName, length);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .contentLength(inputStream.contentLength())
+                .contentType(MediaType.IMAGE_JPEG)
                 .body(inputStream);
     }
 
     @ExceptionHandler(SensorNotFoundException.class)
-    private ResponseEntity<SensorNotFoundResponse> handle(SensorNotFoundException exception) {
+    private ResponseEntity<SensorNotFoundResponse> handleSensorNotFoundException(SensorNotFoundException exception) {
         SensorNotFoundResponse response = new SensorNotFoundResponse(exception.getMessage());
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler(MeasuresException.class)
+    private ResponseEntity<NullMeasuresResponse> handleMeasuresException(MeasuresException exception) {
+        NullMeasuresResponse response = new NullMeasuresResponse(exception.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
 }
