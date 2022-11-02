@@ -39,7 +39,7 @@ public class SensorService {
         Optional<Sensor> temporalSensor = sensorRepository.findById(measure.getSensor().getId());
         if (temporalSensor.isPresent()) {
             List<Measure> last = measureSensor.findMeasureBySensorOrderByDateTimeDesc(new Sensor(measure.getSensor().getId()));
-            if (last.isEmpty() || last.get(0).getValue() != measure.getValue()) {
+            if (last.isEmpty() || last.get(0).getMeasureValue() != measure.getMeasureValue()) {
                 temporalSensor.get().getMeasures().add(measure);
                 measure.setSensor(temporalSensor.get());
                 sensorRepository.save(temporalSensor.get());
@@ -71,4 +71,5 @@ public class SensorService {
     public Optional<Sensor> findSensorByName(String sensorName) {
        return sensorRepository.findDistinctByName(sensorName);
     }
+
 }

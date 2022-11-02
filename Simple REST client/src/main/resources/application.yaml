@@ -3,7 +3,6 @@ server:
   error:
     include-message: always
 
-
 spring:
   servlet:
     multipart:
@@ -29,3 +28,4 @@ spring:
       filter:
         enabled: true
 
+debug: true

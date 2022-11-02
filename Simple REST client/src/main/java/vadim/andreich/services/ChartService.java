@@ -28,7 +28,7 @@ public class ChartService {
         this.sensorService = sensorService;
     }
 
-    public ByteArrayResource getChartBySensor (String sensorName, int length) throws IOException, MeasuresException {
+    public ByteArrayResource getChartBySensor (String sensorName, int length) throws IOException, MeasuresException, SensorNotFoundException {
         Optional<Sensor> optionalSensor = sensorService.findSensorByName(sensorName);
         if (optionalSensor.isEmpty())
             throw new SensorNotFoundException(String.format("Sensor with name[%s] was not found", sensorName));
@@ -36,7 +36,7 @@ public class ChartService {
         Converter<Map<Date, Double>, List<Measure>> converter = obj -> obj.stream()
                 .collect(Collectors.toMap(time -> java.util.Date
                         .from(time.getDateTime().atZone(ZoneId.systemDefault())
-                                .toInstant()), value -> (double) value.getValue()));
+                                .toInstant()), value -> (double) value.getMeasureValue()));
 
         List<Measure> allMeasures = sensorService.getAllMeasurementsBySensorId(optionalSensor.get().getId());
 
