@@ -1,4 +1,4 @@
-package vadim.andreich.model;
+package vadim.andreich.api.model;
 
 import lombok.*;
 import javax.persistence.*;
@@ -16,7 +16,7 @@ public class Sensor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "sensor_name")
+    @Column(name = "name")
     private String name;
 
     public Sensor(int sensor) {

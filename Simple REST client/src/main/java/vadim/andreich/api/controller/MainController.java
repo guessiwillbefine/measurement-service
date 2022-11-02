@@ -1,8 +1,9 @@
-package vadim.andreich.controller;
+package vadim.andreich.api.controller;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.slf4j.event.Level;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -10,21 +11,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import vadim.andreich.dto.MeasurementDTO;
-import vadim.andreich.model.Measure;
-import vadim.andreich.model.Sensor;
-import vadim.andreich.services.ChartService;
-import vadim.andreich.services.MeasureService;
-import vadim.andreich.services.SensorService;
+import vadim.andreich.api.dto.MeasurementDTO;
+import vadim.andreich.api.model.Measure;
+import vadim.andreich.api.model.Sensor;
+import vadim.andreich.api.services.ChartService;
+import vadim.andreich.api.services.MeasureService;
+import vadim.andreich.api.services.SensorService;
 import vadim.andreich.util.Parser;
 import vadim.andreich.util.convert.Converter;
 import vadim.andreich.util.exceptions.MeasuresException;
-import vadim.andreich.util.exceptions.SensorNotFoundException;
 import vadim.andreich.util.response.ErrorResponse;
 import vadim.andreich.util.response.Response;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -37,26 +38,25 @@ public class MainController {
     private final MeasureService measureService;
     private final ChartService chartService;
     private final Logger logger;
+    private final RabbitTemplate rabbitTemplate;
 
     @Autowired
-    public MainController(SensorService sensorService, MeasureService measureService, ChartService chartService) {
+    public MainController(SensorService sensorService, MeasureService measureService, ChartService chartService, RabbitTemplate rabbitTemplate) {
         this.sensorService = sensorService;
         this.measureService = measureService;
         this.chartService = chartService;
+        this.rabbitTemplate = rabbitTemplate;
         logger = LogManager.getLogger(MainController.class);
     }
 
     @PostMapping("/save")
     public ResponseEntity<Boolean> save(@RequestBody MeasurementDTO dto) {
-        if (logger.isDebugEnabled()) {
-            if (dto.getValue() <= 22) {
-                logger.info(String.format("everything is ok, current temperature is %d C°", dto.getValue()));
-            } else if (dto.getValue() > 22 && dto.getValue() < 25) {
-                logger.warn(String.format("everything is almost ok, but current temperature is %d C°", dto.getValue()));
+            if (logger.isDebugEnabled() && dto.getValue() < 25) {
+                logger.info(String.format("current value on sensor[%d] is %d C°",dto.getSensor(), dto.getValue()));
+            } else if (dto.getValue() > 25) {
+                logger.warn(String.format("current temperature  on sensor[%d] is %d C°",dto.getSensor(), dto.getValue()));
+                rabbitTemplate.convertAndSend("alert-queue","telegram-notifier", dto);
             }
-        } else {
-            logger.error(String.format("Critical temperature, pls do something %d C°", dto.getValue()));
-        }
         Measure newMeasure = new Measure(dto.getValue(), dto.getSensor());
         return ResponseEntity.of(Optional.of(sensorService.saveMeasurement(newMeasure)));
     }
@@ -84,7 +84,7 @@ public class MainController {
         if (minValue.isEmpty()) {
             measures = sensorService.getAllMeasurementsBySensorId(id);
         } else {
-            measures = measureService.measureBiggerThan(minValue.get(), id).stream().toList(); //todo у меня одни и те же данные тянутся то с одного сервиса то с другого, пчел
+            measures = measureService.measureBiggerThan(minValue.get(), id).stream().toList();
         }
         logger.debug(measures);
         Converter<MeasurementDTO, Measure> converter = original -> new MeasurementDTO(

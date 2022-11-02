@@ -1,15 +1,15 @@
-package vadim.andreich.services;
+package vadim.andreich.api.services;
 
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.web.client.RestTemplate;
-import vadim.andreich.model.Sensor;
-import vadim.andreich.model.Measure;
+import vadim.andreich.api.model.Measure;
+import vadim.andreich.api.model.Sensor;
 import org.springframework.stereotype.Service;
-import vadim.andreich.repositories.SensorRepository;
-import vadim.andreich.repositories.MeasureRepository;
+import vadim.andreich.api.repositories.SensorRepository;
+import vadim.andreich.api.repositories.MeasureRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import vadim.andreich.util.exceptions.SensorNotFoundException;

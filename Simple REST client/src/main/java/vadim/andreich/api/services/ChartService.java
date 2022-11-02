@@ -1,4 +1,4 @@
-package vadim.andreich.services;
+package vadim.andreich.api.services;
 
 import org.knowm.xchart.BitmapEncoder;
 import org.knowm.xchart.XYChart;
@@ -6,8 +6,8 @@ import org.knowm.xchart.XYChartBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
-import vadim.andreich.model.Measure;
-import vadim.andreich.model.Sensor;
+import vadim.andreich.api.model.Measure;
+import vadim.andreich.api.model.Sensor;
 import vadim.andreich.util.convert.Converter;
 import vadim.andreich.util.exceptions.MeasuresException;
 import vadim.andreich.util.exceptions.SensorNotFoundException;
