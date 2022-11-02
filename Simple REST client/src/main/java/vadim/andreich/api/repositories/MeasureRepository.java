@@ -1,11 +1,11 @@
-package vadim.andreich.repositories;
+package vadim.andreich.api.repositories;
 
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import vadim.andreich.model.Measure;
-import vadim.andreich.model.Sensor;
+import vadim.andreich.api.model.Measure;
+import vadim.andreich.api.model.Sensor;
 
 import java.util.Collection;
 import java.util.List;

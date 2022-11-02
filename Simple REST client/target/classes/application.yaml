@@ -1,3 +1,5 @@
+#debug: true
+
 server:
   port: 8080
   error:
@@ -11,7 +13,7 @@ spring:
 
   datasource:
     username: root
-    password: test
+    password: iammanjaro
     url: jdbc:mysql://localhost:3306/mydb
 
   jpa:
@@ -28,4 +30,7 @@ spring:
       filter:
         enabled: true
 
-debug: true
+bot:
+  name: measureAPIbot
+  key: 5658858750:AAHuiJ4hKeftKNLY71tTPI2UMLDkpnBjmJM
+

@@ -1,6 +1,6 @@
-package vadim.andreich.repositories;
+package vadim.andreich.api.repositories;
 
-import vadim.andreich.model.Sensor;
+import vadim.andreich.api.model.Sensor;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 

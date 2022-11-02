@@ -1,4 +1,4 @@
-package vadim.andreich.model;
+package vadim.andreich.api.model;
 
 import lombok.Getter;
 import lombok.Setter;

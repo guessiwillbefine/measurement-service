@@ -1,11 +1,11 @@
-package vadim.andreich.services;
+package vadim.andreich.api.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import vadim.andreich.model.Measure;
-import vadim.andreich.model.Sensor;
-import vadim.andreich.repositories.MeasureRepository;
+import vadim.andreich.api.model.Measure;
+import vadim.andreich.api.model.Sensor;
+import vadim.andreich.api.repositories.MeasureRepository;
 
 import java.util.Collection;
 import java.util.List;

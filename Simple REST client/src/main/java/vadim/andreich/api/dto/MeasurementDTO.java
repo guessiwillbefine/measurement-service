@@ -1,16 +1,17 @@
-package vadim.andreich.dto;
+package vadim.andreich.api.dto;
 
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @Getter
 @Setter
-public class MeasurementDTO {
+public class MeasurementDTO implements Serializable {
     private int value;
     private LocalDateTime localDateTime;
     private int sensor;
