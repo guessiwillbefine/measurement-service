@@ -14,13 +14,15 @@ import vadim.andreich.dto.MeasurementDTO;
 import vadim.andreich.model.Measure;
 import vadim.andreich.model.Sensor;
 import vadim.andreich.services.ChartService;
+import vadim.andreich.services.MeasureService;
 import vadim.andreich.services.SensorService;
 import vadim.andreich.util.Parser;
 import vadim.andreich.util.convert.Converter;
 import vadim.andreich.util.exceptions.MeasuresException;
 import vadim.andreich.util.exceptions.SensorNotFoundException;
-import vadim.andreich.util.response.NullMeasuresResponse;
-import vadim.andreich.util.response.SensorNotFoundResponse;
+import vadim.andreich.util.response.ErrorResponse;
+import vadim.andreich.util.response.Response;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
@@ -32,12 +34,14 @@ import java.util.Optional;
 @RequestMapping("/api")
 public class MainController {
     private final SensorService sensorService;
+    private final MeasureService measureService;
     private final ChartService chartService;
     private final Logger logger;
 
     @Autowired
-    public MainController(SensorService sensorService, ChartService chartService) {
+    public MainController(SensorService sensorService, MeasureService measureService, ChartService chartService) {
         this.sensorService = sensorService;
+        this.measureService = measureService;
         this.chartService = chartService;
         logger = LogManager.getLogger(MainController.class);
     }
@@ -57,7 +61,7 @@ public class MainController {
         return ResponseEntity.of(Optional.of(sensorService.saveMeasurement(newMeasure)));
     }
 
-    @PostMapping("/register")
+    @PostMapping("/registration")
     public Sensor saveNewSensor(@RequestParam(value = "name", required = false) String name) {
         if (name == null) {
             return sensorService.saveNew();
@@ -65,7 +69,7 @@ public class MainController {
         return sensorService.saveNew(name);
     }
 
-    @GetMapping(value = "/showErrors")
+    @GetMapping(value = "/errors")
     public String showLogs(@RequestBody(required = false) Map<String, List<String>> values) throws FileNotFoundException {
         if (values == null) {
             return Parser.createParser("/home/vadim/docs/Diploma/test/logs/logfile.log").getParsedLogs(Level.ERROR, Parser.Logs.FULL);
@@ -73,12 +77,21 @@ public class MainController {
         return Parser.createParser("/home/vadim/docs/Diploma/test/logs/logfile.log").getParsedLogs(Level.ERROR, values.get("keys"));
     }
 
-    @GetMapping(value = "/getMeasure/{id}")
-    public ResponseEntity<List<MeasurementDTO>> getAllMeasuresById(@PathVariable int id) {
-        List<Measure> measures = sensorService.getAllMeasurementsBySensorId(id);
+    @GetMapping(value = "/measures/{id}")
+    public ResponseEntity<List<MeasurementDTO>> getAllMeasuresById(@PathVariable int id,
+                                                                   @RequestParam(value = "min", required = false) Optional<Integer> minValue) {
+        List<Measure> measures;
+        if (minValue.isEmpty()) {
+            measures = sensorService.getAllMeasurementsBySensorId(id);
+        } else {
+            measures = measureService.measureBiggerThan(minValue.get(), id).stream().toList(); //todo у меня одни и те же данные тянутся то с одного сервиса то с другого, пчел
+        }
+        logger.debug(measures);
         Converter<MeasurementDTO, Measure> converter = original -> new MeasurementDTO(
-                original.getValue(),
-                original.getDateTime());
+                original.getMeasureValue(),
+                original.getDateTime(),
+                original.getSensor().getId()
+                );
 
         List<MeasurementDTO> measurementDTOList = measures.stream()
                 .map(converter::convert)
@@ -99,16 +112,10 @@ public class MainController {
                 .contentType(MediaType.IMAGE_JPEG)
                 .body(inputStream);
     }
-
-    @ExceptionHandler(SensorNotFoundException.class)
-    private ResponseEntity<SensorNotFoundResponse> handleSensorNotFoundException(SensorNotFoundException exception) {
-        SensorNotFoundResponse response = new SensorNotFoundResponse(exception.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-    }
-    @ExceptionHandler(MeasuresException.class)
-    private ResponseEntity<NullMeasuresResponse> handleMeasuresException(MeasuresException exception) {
-        NullMeasuresResponse response = new NullMeasuresResponse(exception.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    @ExceptionHandler(RuntimeException.class)
+    private ResponseEntity<Response> handleSensorNotFoundException(RuntimeException exception) {
+        Response response = new ErrorResponse().setResponseMessage(exception.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
 }

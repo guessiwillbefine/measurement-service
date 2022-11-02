@@ -1,8 +1,15 @@
 package vadim.andreich.dto;
 
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
+@AllArgsConstructor
+@Getter
+@Setter
 public class MeasurementDTO {
     private int value;
     private LocalDateTime localDateTime;
@@ -19,30 +26,6 @@ public class MeasurementDTO {
 
     public MeasurementDTO(int value, LocalDateTime localDateTime) {
         this.value = value;
-        this.localDateTime = localDateTime;
-    }
-
-    public int getValue() {
-        return value;
-    }
-
-    public int getSensor() {
-        return sensor;
-    }
-
-    public LocalDateTime getLocalDateTime() {
-        return localDateTime;
-    }
-
-    public void setSensor(int sensor) {
-        this.sensor = sensor;
-    }
-
-    public void setValue(int value) {
-        this.value = value;
-    }
-
-    public void setLocalDateTime(LocalDateTime localDateTime) {
         this.localDateTime = localDateTime;
     }
 

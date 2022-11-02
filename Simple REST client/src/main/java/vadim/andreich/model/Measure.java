@@ -22,7 +22,7 @@ public class Measure {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(name = "measure_value")
-    private int value;
+    private int measureValue;
     @Column(name = "time")
     private LocalDateTime dateTime;
 
@@ -31,12 +31,12 @@ public class Measure {
     private Sensor sensor;
 
     public Measure(int value, int id) {
-        this.value = value;
+        this.measureValue = value;
         this.dateTime = LocalDateTime.now();
         this.sensor = new Sensor(id);
     }
     public Measure(int value, Sensor sensor) {
-        this.value = value;
+        this.measureValue = value;
         this.dateTime = LocalDateTime.now();
         this.sensor = sensor;
     }
@@ -45,7 +45,7 @@ public class Measure {
 
     public Measure(int id, int value, LocalDateTime dateTime, Sensor sensor) {
         this.id = id;
-        this.value = value;
+        this.measureValue = value;
         this.dateTime = dateTime;
         this.sensor = sensor;
     }

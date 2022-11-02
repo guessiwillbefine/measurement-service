@@ -37,7 +37,7 @@ class SensorServiceTest {
     void testSavingMeasures(int sensorId, int measureValue, boolean needToBeSaved) {
         Measure measure = new Measure();
         measure.setSensor(new Sensor(sensorId));
-        measure.setValue(measureValue);
+        measure.setMeasureValue(measureValue);
         measure.setDateTime(LocalDateTime.now());
         assertThat(sensorService.saveMeasurement(measure)).isEqualTo(needToBeSaved);
     }
