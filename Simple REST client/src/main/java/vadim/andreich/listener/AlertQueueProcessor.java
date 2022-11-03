@@ -3,20 +3,15 @@ package vadim.andreich.listener;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.RequestEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 import vadim.andreich.api.dto.MeasurementDTO;
-import vadim.andreich.listener.dto.AlertDTO;
 import vadim.andreich.telegram.configuration.BotConfig;
-
 import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.util.Map;
 
 @Component
 @EnableRabbit
