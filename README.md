@@ -1,4 +1,4 @@
-# REST-measurement-service
+# measurement-service
 
 ### Simple rest client which can be used to store data of measurements from temperature sensors. If measure will be higher than normal, logger will write in log file about it. If current measure is equal to previous, it wouldn't be saved to DB. Database stores sensor id, measurement value and time of each measurement.
 ### As database i used MySQL server with one simple one-to-many relashionship 
