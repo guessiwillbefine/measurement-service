@@ -1,4 +1,4 @@
-package vadim.andreich.listener.dto;
+package vadim.andreich.api.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

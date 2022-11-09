@@ -8,6 +8,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -18,7 +19,6 @@ import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import vadim.andreich.telegram.configuration.BotConfig;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -34,9 +34,16 @@ public class BotService extends TelegramLongPollingBot {
     private final BotConfig botConfig;
     private final String FILE_NAME = "img.jpeg";
     private final Logger logger;
+    private final RestTemplate restTemplate;
 
     @Autowired
     public BotService(BotConfig botConfig) {
+        this.restTemplate = new RestTemplate();
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(1000);
+        requestFactory.setReadTimeout(1000);
+        restTemplate.setRequestFactory(requestFactory);
+
         this.botConfig = botConfig;
         this.logger = LoggerFactory.getLogger(BotService.class);
     }
@@ -54,8 +61,47 @@ public class BotService extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         String[] args = update.getMessage().getText().split(" ");
-        String uri = String.format("http://localhost:8080/api/stats/%s/%s", args[0], args[1]);
-        RestTemplate restTemplate = new RestTemplate();
+        switch (args[0]) {
+            case "/stats" -> stats(args, update);
+            case "/alert" -> setAlert(update.getMessage().getChatId());
+            default ->
+                    executeMessage(new SendMessage(String.valueOf(update.getMessage().getChatId()), "command not found"));
+        }
+    }
+
+    private void setAlert(Long chatId) {
+        String uri = "http://localhost:8080/alert/set";
+        ResponseEntity<Boolean> response;
+        try {
+            RequestEntity<Long> request = RequestEntity.patch(new URI(uri)).body(chatId);
+            response = restTemplate.exchange(request, Boolean.class);
+        } catch (URISyntaxException e) {
+            logger.error(String.format("Request with URL like this cannot be done: %s", uri));
+            return;
+        }
+        SendMessage messageResponse = new SendMessage();
+        messageResponse.setChatId(String.valueOf(chatId));
+        if (Boolean.TRUE.equals(response.getBody())) {
+            try {
+                boolean alertEnabled = alertStatus(chatId);
+                messageResponse.setText(alertEnabled ? "Alert turned on" : "Alert turned of");
+            } catch (URISyntaxException e) {
+                messageResponse.setText("Something get wrong, try again");
+            }
+        }
+        executeMessage(messageResponse);
+    }
+
+    private boolean alertStatus(Long chatId) throws URISyntaxException {
+        String uri = "http://localhost:8080/alert";
+        ResponseEntity<Boolean> response;
+        RequestEntity<Long> request = RequestEntity.get(new URI(uri));
+        response = restTemplate.exchange(request, Boolean.class);
+        return Boolean.TRUE.equals(response.getBody());
+    }
+
+    private void stats(String[] args, Update update) {
+        String uri = String.format("http://localhost:8080/api/stats/%s/%s", args[1], args[2]);
         RequestEntity<Void> request;
         ResponseEntity<Resource> response;
 
@@ -92,8 +138,6 @@ public class BotService extends TelegramLongPollingBot {
             executeMessage(errorResponse(response.getStatusCode().toString(),
                     String.valueOf(update.getMessage().getChatId())));
         }
-
-
     }
 
     private File readImage(ResponseEntity<Resource> response) {
