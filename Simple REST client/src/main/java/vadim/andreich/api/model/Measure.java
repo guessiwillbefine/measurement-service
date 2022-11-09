@@ -27,7 +27,7 @@ public class Measure {
     private LocalDateTime dateTime;
 
     @ManyToOne
-    @JoinColumn(name = "sensor_id", referencedColumnName = "sensor_id")
+    @JoinColumn(name = "sensor_id", referencedColumnName = "id_sensor")
     private Sensor sensor;
 
     public Measure(int value, int id) {

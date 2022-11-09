@@ -12,7 +12,7 @@ import java.util.Objects;
 public class Sensor {
 
     @Id
-    @Column(name = "sensor_id")
+    @Column(name = "id_sensor")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
