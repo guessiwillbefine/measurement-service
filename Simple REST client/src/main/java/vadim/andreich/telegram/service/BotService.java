@@ -19,13 +19,19 @@ import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import vadim.andreich.telegram.configuration.BotConfig;
+
+import javax.ws.rs.core.UriBuilder;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.file.Files;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -63,17 +69,17 @@ public class BotService extends TelegramLongPollingBot {
         String[] args = update.getMessage().getText().split(" ");
         switch (args[0]) {
             case "/stats" -> stats(args, update);
-            case "/alert" -> setAlert(update.getMessage().getChatId());
+            case "/alert" -> setAlert(Math.toIntExact(update.getMessage().getChatId()));
             default ->
                     executeMessage(new SendMessage(String.valueOf(update.getMessage().getChatId()), "command not found"));
         }
     }
-
-    private void setAlert(Long chatId) {
+ //todo руинится об каст лонга и инта, хз где именно
+    private void setAlert(int chatId) {
         String uri = "http://localhost:8080/alert/set";
         ResponseEntity<Boolean> response;
         try {
-            RequestEntity<Long> request = RequestEntity.patch(new URI(uri)).body(chatId);
+            RequestEntity<Integer> request = RequestEntity.patch(new URI(uri)).body(chatId);
             response = restTemplate.exchange(request, Boolean.class);
         } catch (URISyntaxException e) {
             logger.error(String.format("Request with URL like this cannot be done: %s", uri));
@@ -87,17 +93,35 @@ public class BotService extends TelegramLongPollingBot {
                 messageResponse.setText(alertEnabled ? "Alert turned on" : "Alert turned of");
             } catch (URISyntaxException e) {
                 messageResponse.setText("Something get wrong, try again");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         }
         executeMessage(messageResponse);
     }
 
-    private boolean alertStatus(Long chatId) throws URISyntaxException {
-        String uri = "http://localhost:8080/alert";
-        ResponseEntity<Boolean> response;
-        RequestEntity<Long> request = RequestEntity.get(new URI(uri));
-        response = restTemplate.exchange(request, Boolean.class);
-        return Boolean.TRUE.equals(response.getBody());
+    private boolean alertStatus(int chatId) throws URISyntaxException, IOException, InterruptedException {
+        HttpClient client = HttpClient.newBuilder()
+                .connectTimeout(Duration.ofSeconds(5))
+                .version(HttpClient.Version.HTTP_2)
+                .build();
+
+        UriBuilder builder = UriBuilder
+                .fromUri("http://localhost:8080")
+                .path("/alert")
+                .queryParam("chat_id", chatId);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .uri(builder.build())
+                .timeout(Duration.ofSeconds(5))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        System.out.println(response.body());
+        return false;
     }
 
     private void stats(String[] args, Update update) {

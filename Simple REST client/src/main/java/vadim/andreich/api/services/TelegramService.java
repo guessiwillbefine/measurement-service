@@ -20,12 +20,12 @@ public class TelegramService {
 
 
     @Transactional
-    public int setAlerts(Long id) {
+    public int setAlerts(int id) {
         return telegramRepository.setUpAlertsByChatId(id);
     }
 
     @Transactional(readOnly = true)
-    public Boolean getAlertStatus(Long chatId) {
+    public Boolean getAlertStatus(int chatId) {
         Optional<Telegram> tg = telegramRepository.findDistinctByChatId(chatId);
         if (tg.isPresent()) return tg.get().isAlertEnabled();
         throw new TelegramException("Telegram user not found");

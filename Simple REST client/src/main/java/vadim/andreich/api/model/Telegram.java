@@ -17,7 +17,7 @@ public class Telegram {
     @Id
     @Column(name = "chat_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long chatId;
+    private int chatId;
 
     @Column(name = "username")
     private String username;

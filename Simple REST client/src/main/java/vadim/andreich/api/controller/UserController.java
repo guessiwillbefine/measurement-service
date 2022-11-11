@@ -3,6 +3,9 @@ package vadim.andreich.api.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.telegram.telegrambots.meta.api.objects.Chat;
+import vadim.andreich.api.dto.AlertDTO;
+import vadim.andreich.api.dto.ChatDTO;
 import vadim.andreich.api.model.Sensor;
 import vadim.andreich.api.model.User;
 import vadim.andreich.api.services.SensorService;
@@ -39,12 +42,12 @@ public class UserController {
     }
 
     @PatchMapping("alert/set")
-    public @ResponseBody Boolean setAlert(@RequestBody Long chatId) {
+    public @ResponseBody Boolean setAlert(@RequestBody int chatId) {
           return userService.setAlertsByChatId(chatId) == 1;
     }
 
     @GetMapping("/alert")
-    public @ResponseBody Boolean alertStatus(@RequestBody Long chatId) {
+    public @ResponseBody Boolean alertStatus(@RequestParam("chat_id") int chatId) {
         return telegramService.getAlertStatus(chatId);
     }
 }

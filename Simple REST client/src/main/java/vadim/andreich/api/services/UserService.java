@@ -42,7 +42,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public int setAlertsByChatId(Long id) {
+    public int setAlertsByChatId(int id) {
         return telegramService.setAlerts(id);
     }
 }

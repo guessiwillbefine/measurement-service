@@ -9,7 +9,7 @@ import vadim.andreich.api.model.Telegram;
 import java.util.Optional;
 
 @Repository
-public interface TelegramRepository extends JpaRepository<Telegram, Long> {
+public interface TelegramRepository extends JpaRepository<Telegram, Integer> {
 
     @Modifying
     @Query("""
@@ -17,7 +17,7 @@ public interface TelegramRepository extends JpaRepository<Telegram, Long> {
             when true then false
             else true end
             where t.chatId = ?1""")
-    int setUpAlertsByChatId(Long id);
+    int setUpAlertsByChatId(int id);
 
-    Optional<Telegram> findDistinctByChatId(Long chatId);
+    Optional<Telegram> findDistinctByChatId(int chatId);
 }
